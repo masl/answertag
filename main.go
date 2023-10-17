@@ -1,16 +1,43 @@
 package main
 
 import (
+	"embed"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"text/template"
+
+	"github.com/masl/answertag/web"
+)
+
+var (
+	//go:embed templates/*
+	templateFS embed.FS
+
+	//go:embed css/*
+	cssFS embed.FS
+
+	// parsed templates
+	htmlTemplates *template.Template
 )
 
 func main() {
 	handleSignal()
 
-	slog.Info("Hello, World!")
+	err := parseTemplates()
+	if err != nil {
+		panic(err)
+	}
+
+	server := &http.Server{
+		Addr: ":3000",
+		Handler: web.GetRouter(htmlTemplates, cssFS),
+	}
+
+	slog.Info("web server listening on port 3000")
+	panic(server.ListenAndServe())
 }
 
 func handleSignal() {
@@ -21,4 +48,13 @@ func handleSignal() {
 		slog.Info("exiting, bye-bye!")
 		os.Exit(1)
 	}()
+}
+
+func parseTemplates() (err error) {
+	htmlTemplates, err = template.ParseFS(templateFS, "templates/*.html")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

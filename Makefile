@@ -60,7 +60,7 @@ test/cover:
 
 ## build: build the application
 .PHONY: build
-build:
+build: css
 	# Include additional build steps, like TypeScript, SCSS or Tailwind compilation here...
 	go build -o=./tmp/bin/${BINARY_NAME} ${MAIN_PACKAGE_PATH}
 
@@ -78,6 +78,15 @@ run/live:
 		--build.include_ext "go, tpl, tmpl, html, css, scss, js, ts, sql, jpeg, jpg, gif, png, bmp, svg, webp, ico" \
 		--misc.clean_on_exit "true"
 
+## css: build tailwindcss
+.PHONY: css
+css:
+	tailwindcss -i css/style.css -o css/output.css --minify
+
+## css-watch: watch tailwindcss build
+.PHONY: css-watch
+css-watch:
+	tailwindcss -i css/style.css -o css/output.css --watch
 
 # ==================================================================================== #
 # OPERATIONS
