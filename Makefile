@@ -81,12 +81,12 @@ run/live:
 ## css: build tailwindcss
 .PHONY: css
 css:
-	tailwindcss -i css/style.css -o css/output.css --minify
+	tailwindcss -i static/style.css -o static/output.css --minify
 
 ## css-watch: watch tailwindcss build
 .PHONY: css-watch
 css-watch:
-	tailwindcss -i css/style.css -o css/output.css --watch
+	tailwindcss -i static/style.css -o static/output.css --watch
 
 # ==================================================================================== #
 # OPERATIONS

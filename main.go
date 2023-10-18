@@ -16,8 +16,8 @@ var (
 	//go:embed templates/*
 	templateFS embed.FS
 
-	//go:embed css/*
-	cssFS embed.FS
+	//go:embed static/*
+	staticFS embed.FS
 
 	// parsed templates
 	htmlTemplates *template.Template
@@ -32,8 +32,8 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr: ":3000",
-		Handler: web.GetRouter(htmlTemplates, cssFS),
+		Addr:    ":3000",
+		Handler: web.GetRouter(htmlTemplates, staticFS),
 	}
 
 	slog.Info("web server listening on port 3000")
