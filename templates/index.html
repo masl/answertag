@@ -7,10 +7,17 @@
     <link href="/static/output.css" rel="stylesheet">
     <title>{{ .Title }}</title>
     <script src="/static/htmx.min.js"></script>
+    <script src="/static/ext/json-enc.js"></script>
 </head>
 
-<body class="h-screen bg-gray-100 dark:bg-gray-700">
-    <p class="text-blue-500">Hello, World from HTML!</p>
+<body class="h-screen bg-white dark:bg-midnight">
+    <div class="flex flex-col gap-y-4 justify-center items-center h-screen">
+        <p class="dark:text-font" id="greeting">Hello, World!</p>
+        <form>
+            <input class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1" type="text" name="name" placeholder="Enter your name" required>
+            <button class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1" type="submit" hx-post="/api/ping" hx-target="#greeting" hx-ext="json-enc">Submit</button>
+        </form>
+    </div>
 </body>
 
 </html>
