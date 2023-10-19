@@ -17,9 +17,7 @@ func GetRouter(htmlTemplates *template.Template, staticFS fs.FS) *httprouter.Rou
 	router.GET("/", index.Handle(htmlTemplates))
 
 	// static files
-	router.Handler("GET", "/static/output.css", http.FileServer(http.FS(staticFS)))
-	router.Handler("GET", "/static/htmx.min.js", http.FileServer(http.FS(staticFS)))
-	router.Handler("GET", "/static/ext/json-enc.js", http.FileServer(http.FS(staticFS)))
+	router.Handler("GET",  "/static/*filepath", http.FileServer(http.FS(staticFS)))
 
 	// api endpoints
 	router.POST("/api/ping", ping.Handle())
