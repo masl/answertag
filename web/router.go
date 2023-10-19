@@ -6,11 +6,13 @@ import (
 	"text/template"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/masl/answertag/storage"
 	"github.com/masl/answertag/web/index"
 	"github.com/masl/answertag/web/ping"
+	"github.com/masl/answertag/web/start"
 )
 
-func GetRouter(htmlTemplates *template.Template, staticFS fs.FS) *httprouter.Router {
+func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS fs.FS) *httprouter.Router {
 	router := httprouter.New()
 
 	// index page
@@ -21,6 +23,8 @@ func GetRouter(htmlTemplates *template.Template, staticFS fs.FS) *httprouter.Rou
 
 	// api endpoints
 	router.POST("/api/ping", ping.Handle())
+
+	router.POST("/api/start", start.Handle(store))
 
 	return router
 }

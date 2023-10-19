@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"text/template"
 
+	"github.com/masl/answertag/storage/inmemory"
 	"github.com/masl/answertag/web"
 )
 
@@ -31,9 +32,11 @@ func main() {
 		panic(err)
 	}
 
+	store := inmemory.New()
+
 	server := &http.Server{
 		Addr:    ":3000",
-		Handler: web.GetRouter(htmlTemplates, staticFS),
+		Handler: web.GetRouter(store, htmlTemplates, staticFS),
 	}
 
 	slog.Info("web server listening on port 3000")
