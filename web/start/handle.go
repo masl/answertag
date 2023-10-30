@@ -21,7 +21,7 @@ func Handle(store storage.Store) httprouter.Handle {
 		}
 
 		responseBody := ReseponseBody{
-			CloudId: c.Id.String(),
+			CloudID: c.ID.String(),
 		}
 
 		responseBytes, err := json.Marshal(responseBody)
@@ -30,7 +30,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		slog.Info("cloud created", "cloud", c.Id.String())
+		slog.Info("cloud created", "cloud", c.ID.String())
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

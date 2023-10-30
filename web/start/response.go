@@ -1,5 +1,5 @@
 package start
 
 type ReseponseBody struct {
-	CloudId string `json:"cloudId"`
+	CloudID string `json:"cloudId"`
 }

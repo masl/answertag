@@ -22,16 +22,16 @@ func New() *Store {
 }
 
 func (s *Store) Add(c *cloud.Cloud) error {
-	if _, ok := s.clouds[c.Id.String()]; ok {
+	if _, ok := s.clouds[c.ID.String()]; ok {
 		return ErrAlreadyExists
 	}
 
-	s.clouds[c.Id.String()] = c
+	s.clouds[c.ID.String()] = c
 
 	return nil
 }
 
-func (s *Store) GetById(id string) (*cloud.Cloud, error) {
+func (s *Store) GetByID(id string) (*cloud.Cloud, error) {
 	return nil, errors.New("not implemented")
 }
 

@@ -51,6 +51,10 @@ func Handle(html *template.Template, store storage.Store) httprouter.Handle {
 
 			// get all tags and write message with tags.html templates
 			tagsData, err := store.GetAllTags()
+			if err != nil {
+				slog.Info("get all tags:", "error", err)
+				break
+			}
 
 			var buf bytes.Buffer
 			err = html.ExecuteTemplate(&buf, "tags.html", tagsData)
