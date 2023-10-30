@@ -10,6 +10,9 @@ var ErrAlreadyExists = errors.New("cloud already exists")
 
 type Store struct {
 	clouds map[string]*cloud.Cloud
+	
+	// TODO: add clouds
+	tags []string
 }
 
 func New() *Store {
@@ -30,4 +33,13 @@ func (s *Store) Add(c *cloud.Cloud) error {
 
 func (s *Store) GetById(id string) (*cloud.Cloud, error) {
 	return nil, errors.New("not implemented")
+}
+
+func (s *Store) AddTag(tag string) error {
+	s.tags = append(s.tags, tag)
+	return nil
+}
+
+func (s *Store) GetAllTags() ([]string, error) {
+	return s.tags, nil
 }
