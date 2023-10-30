@@ -30,7 +30,7 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
-		slog.Info("cloud created: %s", c.Id.String())
+		slog.Info("cloud created", "cloud", c.Id.String())
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

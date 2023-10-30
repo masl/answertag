@@ -18,7 +18,7 @@ func Handle() httprouter.Handle {
 
 		err := json.NewDecoder(r.Body).Decode(&p)
 		if err != nil {
-			slog.Error("ping error:", err)
+			slog.Error("ping error", "error", err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
