@@ -11,6 +11,7 @@ import (
 
 	"github.com/masl/answertag/storage/inmemory"
 	"github.com/masl/answertag/web"
+	"github.com/masl/answertag/ws"
 )
 
 var (
@@ -33,10 +34,12 @@ func main() {
 	}
 
 	store := inmemory.New()
+	hub := ws.NewHub()
+	go hub.Run()
 
 	server := &http.Server{
 		Addr:    ":3000",
-		Handler: web.GetRouter(store, htmlTemplates, staticFS),
+		Handler: web.GetRouter(store, htmlTemplates, staticFS, hub),
 	}
 
 	slog.Info("web server listening on port 3000")

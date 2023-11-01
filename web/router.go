@@ -11,9 +11,10 @@ import (
 	"github.com/masl/answertag/web/ping"
 	"github.com/masl/answertag/web/start"
 	"github.com/masl/answertag/web/tags"
+	"github.com/masl/answertag/ws"
 )
 
-func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS fs.FS) *httprouter.Router {
+func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS fs.FS, hub *ws.Hub) *httprouter.Router {
 	router := httprouter.New()
 
 	// index page
@@ -28,7 +29,7 @@ func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS f
 	router.POST("/api/start", start.Handle(store))
 
 	// websocket endpoint
-	router.GET("/tags", tags.Handle(htmlTemplates, store))
+	router.GET("/tags", tags.Handle(htmlTemplates, store, hub))
 
 	return router
 }
