@@ -34,7 +34,7 @@ func main() {
 	}
 
 	store := inmemory.New()
-	hub := ws.NewHub()
+	hub := ws.NewHub(store, htmlTemplates)
 	go hub.Run()
 
 	server := &http.Server{

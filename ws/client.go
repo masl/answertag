@@ -3,7 +3,9 @@ package ws
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -62,11 +64,47 @@ func (c *Client) readPump() {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				slog.Error("unexpected websocket close", "error", err)
 			}
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+
+		// unmarshal message
+		// TODO: struct
+		var incomingData struct {
+			Tag string `json:"tag"`
+		}
+		err = json.Unmarshal(message, &incomingData)
+		if err != nil {
+			slog.Error("unmarshal", "error", err)
+			break
+		}
+
+		// add tag to storage
+		err = c.hub.storage.AddTag(incomingData.Tag)
+		if err != nil {
+			slog.Error("add tag to storage", "error", err)
+			break
+		}
+
+		// get all tags and write message with tags.html templates
+		allTags, err := c.hub.storage.GetAllTags()
+		if err != nil {
+			slog.Error("get all tags from storage", "error", err)
+			break
+		}
+
+		var responseBuffer bytes.Buffer
+		err = c.hub.htmlTemplates.ExecuteTemplate(&responseBuffer, "tags.html", allTags)
+		if err != nil {
+			slog.Error("execute tags.html template", "error", err)
+			break
+		}
+
+		// write message to all clients
+		message = responseBuffer.Bytes()
+
 		c.hub.broadcast <- message
 	}
 }
