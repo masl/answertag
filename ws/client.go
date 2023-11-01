@@ -89,21 +89,11 @@ func (c *Client) readPump() {
 		}
 
 		// get all tags and write message with tags.html templates
-		allTags, err := c.hub.storage.GetAllTags()
+		message, err = c.allTagsTemplateBuffer()
 		if err != nil {
-			slog.Error("get all tags from storage", "error", err)
+			slog.Error("get all tags template buffer", "error", err)
 			break
 		}
-
-		var responseBuffer bytes.Buffer
-		err = c.hub.htmlTemplates.ExecuteTemplate(&responseBuffer, "tags.html", allTags)
-		if err != nil {
-			slog.Error("execute tags.html template", "error", err)
-			break
-		}
-
-		// write message to all clients
-		message = responseBuffer.Bytes()
 
 		c.hub.broadcast <- message
 	}
@@ -165,8 +155,35 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 
+	// Send initial message with all tags to client
+	message, err := client.allTagsTemplateBuffer()
+	if err != nil {
+		slog.Error("get all tags template buffer", "error", err)
+		return
+	}
+
+	client.send <- message
+
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+}
+
+// allTagsTemplateBuffer returns the buffer with the tags.html template.
+func (c *Client) allTagsTemplateBuffer() ([]byte, error) {
+	allTags, err := c.hub.storage.GetAllTags()
+	if err != nil {
+		slog.Error("get all tags from storage", "error", err)
+		return nil, err
+	}
+
+	var responseBuffer bytes.Buffer
+	err = c.hub.htmlTemplates.ExecuteTemplate(&responseBuffer, "tags.html", allTags)
+	if err != nil {
+		slog.Error("execute tags.html template", "error", err)
+		return nil, err
+	}
+
+	return responseBuffer.Bytes(), nil
 }
