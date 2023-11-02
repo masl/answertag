@@ -3,16 +3,19 @@ package inmemory
 import (
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/masl/answertag/cloud"
 )
 
-var ErrAlreadyExists = errors.New("cloud already exists")
+var (
+	ErrAlreadyExists = errors.New("cloud already exists")
+	ErrNotFound      = errors.New("cloud not found")
+)
 
+// Store represents an in-memory storage.
 type Store struct {
+	// clouds maps cloud-IDs to clouds.
 	clouds map[string]*cloud.Cloud
-	
-	// TODO: add clouds
-	tags []string
 }
 
 func New() *Store {
@@ -21,7 +24,8 @@ func New() *Store {
 	}
 }
 
-func (s *Store) Add(c *cloud.Cloud) error {
+// Create creates a new tag-cloud.
+func (s *Store) Create(c *cloud.Cloud) error {
 	if _, ok := s.clouds[c.ID.String()]; ok {
 		return ErrAlreadyExists
 	}
@@ -31,15 +35,24 @@ func (s *Store) Add(c *cloud.Cloud) error {
 	return nil
 }
 
-func (s *Store) GetByID(id string) (*cloud.Cloud, error) {
-	return nil, errors.New("not implemented")
-}
+// Update updates an existing tag-cloud.
+func (s *Store) Update(c *cloud.Cloud) error {
+	if _, ok := s.clouds[c.ID.String()]; !ok {
+		return ErrNotFound
+	}
 
-func (s *Store) AddTag(tag string) error {
-	s.tags = append(s.tags, tag)
+	s.clouds[c.ID.String()] = c
+
 	return nil
 }
 
-func (s *Store) GetAllTags() ([]string, error) {
-	return s.tags, nil
+// ReadById reads a tag-cloud by its ID.
+func (s *Store) ReadById(id string) (*cloud.Cloud, error) {
+	uuid.Parse(id)
+
+	if cloud, ok := s.clouds[id]; ok {
+		return cloud, nil
+	}
+
+	return nil, ErrNotFound
 }

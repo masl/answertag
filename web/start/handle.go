@@ -14,7 +14,7 @@ func Handle(store storage.Store) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		c := cloud.New()
 
-		err := store.Add(c)
+		err := store.Create(c)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

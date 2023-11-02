@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/masl/answertag/cloud"
 )
 
 const (
@@ -71,25 +72,34 @@ func (c *Client) readPump() {
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 
 		// unmarshal message
-		// TODO: struct
-		var incomingData struct {
-			Tag string `json:"tag"`
-		}
+		var incomingData Message
 		err = json.Unmarshal(message, &incomingData)
 		if err != nil {
 			slog.Error("unmarshal", "error", err)
 			break
 		}
 
-		// add tag to storage
-		err = c.hub.storage.AddTag(incomingData.Tag)
+		// get cloud by id from storage and add tag
+		cld, err := c.hub.storage.ReadById(incomingData.CloudID)
 		if err != nil {
-			slog.Error("add tag to storage", "error", err)
+			slog.Error("read cloud by id from storage", "error", err)
+			break
+		}
+
+		cld.AddTag(&cloud.Tag{
+			Name:  incomingData.Tag,
+			Count: 1,
+		})
+
+		// update cloud in storage
+		err = c.hub.storage.Update(cld)
+		if err != nil {
+			slog.Error("update cloud in storage", "error", err)
 			break
 		}
 
 		// get all tags and write message with tags.html templates
-		message, err = c.allTagsTemplateBuffer()
+		message, err = c.allTagsTemplateBuffer(cld)
 		if err != nil {
 			slog.Error("get all tags template buffer", "error", err)
 			break
@@ -155,8 +165,15 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 
+	// get cloud by id from storage and add tag
+	cld, err := client.hub.storage.ReadById("00000000-0000-0000-0000-000000000000")
+	if err != nil {
+		slog.Error("read cloud by id from storage", "error", err)
+		return
+	}
+
 	// Send initial message with all tags to client
-	message, err := client.allTagsTemplateBuffer()
+	message, err := client.allTagsTemplateBuffer(cld)
 	if err != nil {
 		slog.Error("get all tags template buffer", "error", err)
 		return
@@ -171,10 +188,10 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 }
 
 // allTagsTemplateBuffer returns the buffer with the tags.html template.
-func (c *Client) allTagsTemplateBuffer() ([]byte, error) {
-	allTags, err := c.hub.storage.GetAllTags()
+func (c *Client) allTagsTemplateBuffer(cloud *cloud.Cloud) ([]byte, error) {
+	allTags, err := cloud.AllTags()
 	if err != nil {
-		slog.Error("get all tags from storage", "error", err)
+		slog.Error("get all tags", "error", err)
 		return nil, err
 	}
 
