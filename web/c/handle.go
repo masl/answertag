@@ -12,7 +12,7 @@ import (
 
 func Handle(html *template.Template, store storage.Store) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		cld, err := store.ReadById(ps.ByName("id"))
+		cld, err := store.ReadByID(ps.ByName("id"))
 		if err != nil {
 			slog.Error("error reading cloud", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

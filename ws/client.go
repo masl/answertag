@@ -80,7 +80,7 @@ func (c *Client) readPump() {
 		}
 
 		// get cloud by id from storage and add tag
-		cld, err := c.hub.storage.ReadById(incomingData.CloudID)
+		cld, err := c.hub.storage.ReadByID(incomingData.CloudID)
 		if err != nil {
 			slog.Error("read cloud by id from storage", "error", err)
 			break

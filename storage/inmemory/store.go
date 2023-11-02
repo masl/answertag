@@ -46,8 +46,8 @@ func (s *Store) Update(c *cloud.Cloud) error {
 	return nil
 }
 
-// ReadById reads a tag-cloud by its ID.
-func (s *Store) ReadById(id string) (*cloud.Cloud, error) {
+// ReadByID reads a tag-cloud by its ID.
+func (s *Store) ReadByID(id string) (*cloud.Cloud, error) {
 	uuid.Parse(id)
 
 	if cloud, ok := s.clouds[id]; ok {
