@@ -1,15 +1,9 @@
 package inmemory
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 	"github.com/masl/answertag/cloud"
-)
-
-var (
-	ErrAlreadyExists = errors.New("cloud already exists")
-	ErrNotFound      = errors.New("cloud not found")
+	"github.com/masl/answertag/storage"
 )
 
 // Store represents an in-memory storage.
@@ -27,7 +21,7 @@ func New() *Store {
 // Create creates a new tag-cloud.
 func (s *Store) Create(c *cloud.Cloud) error {
 	if _, ok := s.clouds[c.ID.String()]; ok {
-		return ErrAlreadyExists
+		return storage.ErrAlreadyExists
 	}
 
 	s.clouds[c.ID.String()] = c
@@ -38,7 +32,7 @@ func (s *Store) Create(c *cloud.Cloud) error {
 // Update updates an existing tag-cloud.
 func (s *Store) Update(c *cloud.Cloud) error {
 	if _, ok := s.clouds[c.ID.String()]; !ok {
-		return ErrNotFound
+		return storage.ErrNotFound
 	}
 
 	s.clouds[c.ID.String()] = c
@@ -54,5 +48,5 @@ func (s *Store) ReadByID(id string) (*cloud.Cloud, error) {
 		return cloud, nil
 	}
 
-	return nil, ErrNotFound
+	return nil, storage.ErrNotFound
 }

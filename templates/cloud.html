@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/output.css" rel="stylesheet">
-    <title>{{ .CloudID }}</title>
+    <title>{{ .ID }}</title>
     <script src="/static/htmx.min.js"></script>
     <script src="/static/ext/json-enc.js"></script>
     <script src="/static/ext/ws.js"></script>
@@ -18,7 +18,7 @@
             <input
                 class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
                 type="text" name="tag" placeholder="Enter your name" required>
-            <input type="hidden" name="cloudId" value="{{ .CloudID }}">
+            <input type="hidden" name="cloudId" value="{{ .ID }}">
             <button
                 class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
                 type="submit" hx-target="#tags">
