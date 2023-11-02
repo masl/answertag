@@ -18,9 +18,21 @@ func New() *Cloud {
 	}
 }
 
-// AddTag adds a new tag to the tag-cloud.
-func (c *Cloud) AddTag(t *Tag) error {
-	c.Tags = append(c.Tags, t)
+// AddTag adds a new tag with the given name to the tag-cloud
+// and keeps track of the number of occurrences.
+func (c *Cloud) AddTag(name string) error {
+	for _, t := range c.Tags {
+		if t.Name == name {
+			t.Count++
+			return nil
+		}
+	}
+
+	c.Tags = append(c.Tags, &Tag{
+		Name:  name,
+		Count: 1,
+	})
+
 	return nil
 }
 

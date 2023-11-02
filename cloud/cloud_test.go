@@ -30,7 +30,7 @@ func TestAddTag(t *testing.T) {
 		c := cloud.New()
 		t1 := &cloud.Tag{Name: "lol", Count: 1}
 
-		err := c.AddTag(t1)
+		err := c.AddTag(t1.Name)
 		assert.NoError(t, err)
 
 		assert.Equal(t, []*cloud.Tag{t1}, c.Tags)
@@ -39,29 +39,29 @@ func TestAddTag(t *testing.T) {
 	t.Run("Adds multiple tags to the cloud", func(t *testing.T) {
 		c := cloud.New()
 		t1 := &cloud.Tag{Name: "lol", Count: 1}
-		t2 := &cloud.Tag{Name: "rofl", Count: 2}
+		t2 := &cloud.Tag{Name: "rofl", Count: 4}
 
-		err := c.AddTag(t1)
+		err := c.AddTag(t1.Name)
 		assert.NoError(t, err)
 
-		err = c.AddTag(t2)
-		assert.NoError(t, err)
+		for i := 0; i < 4; i++ {
+			err = c.AddTag(t2.Name)
+			assert.NoError(t, err)
+		}
 
 		assert.Equal(t, []*cloud.Tag{t1, t2}, c.Tags)
 	})
 
 	t.Run("Adds multiple tags with the same name to the cloud", func(t *testing.T) {
 		c := cloud.New()
-		t1 := &cloud.Tag{Name: "lol", Count: 1}
-
-		tExpected := &cloud.Tag{Name: "lol", Count: 3}
+		t1 := &cloud.Tag{Name: "lol", Count: 3}
 
 		for i := 0; i < 3; i++ {
-			err := c.AddTag(t1)
+			err := c.AddTag(t1.Name)
 			assert.NoError(t, err)
 		}
 
-		assert.Equal(t, []*cloud.Tag{tExpected}, c.Tags)
+		assert.Equal(t, []*cloud.Tag{t1}, c.Tags)
 	})
 }
 
@@ -71,11 +71,13 @@ func TestAllTags(t *testing.T) {
 		t1 := &cloud.Tag{Name: "lol", Count: 1}
 		t2 := &cloud.Tag{Name: "rofl", Count: 2}
 
-		err := c.AddTag(t1)
+		err := c.AddTag(t1.Name)
 		assert.NoError(t, err)
 
-		err = c.AddTag(t2)
-		assert.NoError(t, err)
+		for i := 0; i < 2; i++ {
+			err = c.AddTag(t2.Name)
+			assert.NoError(t, err)
+		}
 
 		allTags, err := c.AllTags()
 		assert.NoError(t, err)

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/masl/answertag/cloud"
 )
 
 const (
@@ -86,10 +85,11 @@ func (c *Client) readPump() {
 			break
 		}
 
-		cld.AddTag(&cloud.Tag{
-			Name:  incomingData.Tag,
-			Count: 1,
-		})
+		err = cld.AddTag(incomingData.Tag)
+		if err != nil {
+			slog.Error("add tag to cloud", "error", err)
+			break
+		}
 
 		// update cloud in storage
 		err = c.hub.storage.Update(cld)

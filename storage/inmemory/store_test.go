@@ -68,10 +68,7 @@ func TestUpdate(t *testing.T) {
 		err := s.Create(c)
 		assert.NoError(t, err)
 
-		c.AddTag(&cloud.Tag{
-			Name:  "foo",
-			Count: 1,
-		})
+		c.AddTag("foo")
 
 		err = s.Update(c)
 		assert.NoError(t, err)
