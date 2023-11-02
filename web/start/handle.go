@@ -30,6 +30,9 @@ func Handle(store storage.Store) httprouter.Handle {
 			return
 		}
 
+		// htmx redirect to cloud page
+		w.Header().Set("HX-Redirect", "/c/"+c.ID.String())
+
 		slog.Info("cloud created", "cloud", c.ID.String())
 
 		w.Header().Set("Content-Type", "application/json")

@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/masl/answertag/storage"
+	"github.com/masl/answertag/web/c"
 	"github.com/masl/answertag/web/index"
 	"github.com/masl/answertag/web/ping"
 	"github.com/masl/answertag/web/start"
@@ -20,8 +21,11 @@ func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS f
 	// index page
 	router.GET("/", index.Handle(htmlTemplates))
 
+	// cloud page
+	router.GET("/c/:id", c.Handle(htmlTemplates, store))
+
 	// static files
-	router.Handler("GET",  "/static/*filepath", http.FileServer(http.FS(staticFS)))
+	router.Handler("GET", "/static/*filepath", http.FileServer(http.FS(staticFS)))
 
 	// api endpoints
 	router.POST("/api/ping", ping.Handle())

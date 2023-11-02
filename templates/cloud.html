@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/output.css" rel="stylesheet">
+    <title>{{ .CloudID }}</title>
+    <script src="/static/htmx.min.js"></script>
+    <script src="/static/ext/json-enc.js"></script>
+    <script src="/static/ext/ws.js"></script>
+</head>
+
+<body class="h-screen bg-white dark:bg-midnight">
+    <div class="flex flex-col gap-y-4 justify-center items-center h-screen" hx-ext="ws" ws-connect="/tags">
+        {{ template "tags.html" .Tags }}
+        <form ws-send>
+            <input
+                class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
+                type="text" name="tag" placeholder="Enter your name" required>
+            <input type="hidden" name="cloudId" value="{{ .CloudID }}">
+            <button
+                class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
+                type="submit" hx-target="#tags">
+                Submit
+            </button>
+        </form>
+    </div>
+</body>
+
+</html>
