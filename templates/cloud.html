@@ -14,7 +14,7 @@
 <body class="h-screen bg-white dark:bg-midnight">
     <div class="flex flex-col gap-y-4 justify-center items-center h-screen" hx-ext="ws" ws-connect="/tags">
         {{ template "tags.html" .Tags }}
-        <form ws-send>
+        <form ws-send hx-on::ws-after-send="this.reset()">
             <input
                 class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
                 type="text" name="tag" placeholder="Enter your name" required>
