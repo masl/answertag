@@ -1,0 +1,11 @@
+{
+    // use django-html for html files to prevent errors using template literals (interim solution)
+    "files.associations": {
+        "*.html": "django-html"
+    },
+
+    // use go formatter for go files
+    "[go]": {
+        "editor.defaultFormatter": "golang.go"
+    },
+}
