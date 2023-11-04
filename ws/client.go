@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/masl/answertag/cloud"
 )
 
 const (
@@ -106,7 +107,7 @@ func (c *Client) readPump() {
 		}
 
 		var responseBuffer bytes.Buffer
-		err = c.hub.htmlTemplates.ExecuteTemplate(&responseBuffer, "tags.html", allTags)
+		err = c.hub.htmlTemplates.ExecuteTemplate(&responseBuffer, "tags.html", cloud.SupplementTagsWithFontSizes(allTags))
 		if err != nil {
 			slog.Error("execute tags.html template", "error", err)
 			break

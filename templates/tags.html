@@ -1,7 +1,7 @@
 <div id="tags">
     <ul>
         {{ range . }}
-        <li>{{ . }}</li>
+        <li class="dark:text-font" style="font-size: {{ .FontSize }}px">{{ .Tag.Name }}</li>
         {{ end }}
     </ul>
 </div>

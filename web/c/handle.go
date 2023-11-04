@@ -6,12 +6,13 @@ import (
 	"text/template"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/masl/answertag/cloud"
 	"github.com/masl/answertag/storage"
 )
 
 func Handle(html *template.Template, store storage.Store) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		data, err := store.ReadByID(ps.ByName("id"))
+		cld, err := store.ReadByID(ps.ByName("id"))
 		if err != nil {
 			if err == storage.ErrNotFound {
 				http.NotFound(w, r)
@@ -20,6 +21,14 @@ func Handle(html *template.Template, store storage.Store) httprouter.Handle {
 
 			slog.Error("error reading cloud", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		data := struct {
+			CloudID string
+			Tags    []cloud.TagWithFontSize
+		}{
+			CloudID: cld.ID.String(),
+			Tags:    cloud.SupplementTagsWithFontSizes(cld.Tags),
 		}
 
 		err = html.ExecuteTemplate(w, "cloud.html", data)

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/output.css" rel="stylesheet">
-    <title>{{ .ID }}</title>
+    <title>{{ .CloudID }}</title>
     <script src="/static/htmx.min.js"></script>
     <script src="/static/ext/json-enc.js"></script>
     <script src="/static/ext/ws.js"></script>
@@ -17,8 +17,8 @@
         <form ws-send hx-on::ws-after-send="this.reset()">
             <input
                 class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
-                type="text" name="tag" placeholder="Enter your name" required>
-            <input type="hidden" name="cloudId" value="{{ .ID }}">
+                type="text" name="tag" placeholder="What's on your mind?" required>
+            <input type="hidden" name="cloudId" value="{{ .CloudID }}">
             <button
                 class="dark:text-font bg-white hover:bg-font dark:bg-primary dark:hover:bg-seconary border-font dark:border-tertiary border px-2 py-1"
                 type="submit" hx-target="#tags">
