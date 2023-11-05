@@ -1,7 +1,8 @@
 <div id="tags">
-    <ul>
+    <ul id="tag-list">
         {{ range . }}
-        <li class="dark:text-font" style="font-size: {{ .FontSize }}px">{{ .Tag.Name }}</li>
+        <li class="hidden" data-font-size="{{ .FontSize }}" data-name="{{ .Tag.Name}}"></li>
         {{ end }}
     </ul>
+    <div id="tagcloud" class="dark:fill-font"></div>
 </div>

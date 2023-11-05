@@ -6,13 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/output.css" rel="stylesheet">
     <title>{{ .CloudID }}</title>
+
+    <!-- htmx -->
     <script src="/static/htmx.min.js"></script>
     <script src="/static/ext/json-enc.js"></script>
     <script src="/static/ext/ws.js"></script>
+
+    <!-- d3.js -->
+    <script src="/static/cloud.js"></script>
+    <script src="/static/d3.v4.min.js"></script>
+    <script src="/static/d3.layout.cloud.min.js"></script>
 </head>
 
 <body class="h-screen bg-white dark:bg-midnight">
-    <div class="flex flex-col gap-y-4 justify-center items-center h-screen" hx-ext="ws" ws-connect="/ws/{{ .CloudID }}">
+    <main class="flex flex-col gap-y-4 justify-center items-center h-screen" hx-ext="ws" ws-connect="/ws/{{ .CloudID }}">
         {{ template "tags.html" .Tags }}
         <form ws-send hx-on::ws-after-send="this.reset()">
             <input
@@ -25,7 +32,7 @@
                 Submit
             </button>
         </form>
-    </div>
+    </main>
 </body>
 
 </html>
