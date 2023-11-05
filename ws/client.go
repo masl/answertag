@@ -46,6 +46,9 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
+
+	// cloudID is the id of the cloud this client is connected to.
+	cloudID string
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -113,7 +116,11 @@ func (c *Client) readPump() {
 			break
 		}
 
-		c.hub.broadcast <- responseBuffer.Bytes()
+		// broadcast the message
+		c.hub.broadcast <- BroadcastMessage{
+			CloudID: incomingData.CloudID,
+			Message: responseBuffer.Bytes(),
+		}
 	}
 }
 
@@ -164,13 +171,13 @@ func (c *Client) writePump() {
 }
 
 // ServeWs handles websocket requests from the peer.
-func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request, cloudID string) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), cloudID: cloudID}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in

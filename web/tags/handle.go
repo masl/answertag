@@ -4,16 +4,23 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/gorilla/websocket"
 	"github.com/julienschmidt/httprouter"
 	"github.com/masl/answertag/storage"
 	"github.com/masl/answertag/ws"
 )
 
-var upgrader = websocket.Upgrader{}
-
 func Handle(html *template.Template, store storage.Store, hub *ws.Hub) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		ws.ServeWs(hub, w, r)
+		cloudID := ps.ByName("id")
+
+		// check if cloud exists
+		// TODO: separate exists function in storage?
+		_, err := store.ReadByID(cloudID)
+		if err == storage.ErrNotFound {
+			http.NotFound(w, r)
+			return
+		}
+
+		ws.ServeWs(hub, w, r, cloudID)
 	}
 }

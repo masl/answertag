@@ -14,7 +14,7 @@ type Hub struct {
 	clients map[*Client]bool
 
 	// Inbound messages from the clients.
-	broadcast chan []byte
+	broadcast chan BroadcastMessage
 
 	// Register requests from the clients.
 	register chan *Client
@@ -31,7 +31,7 @@ type Hub struct {
 
 func NewHub(store storage.Store, htmlTemplates *template.Template) *Hub {
 	return &Hub{
-		broadcast:     make(chan []byte),
+		broadcast:     make(chan BroadcastMessage),
 		register:      make(chan *Client),
 		unregister:    make(chan *Client),
 		clients:       make(map[*Client]bool),
@@ -52,8 +52,12 @@ func (h *Hub) Run() {
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
+				// skip clients that are not connected to the same cloud
+				if client.cloudID != message.CloudID {
+					continue
+				}
 				select {
-				case client.send <- message:
+				case client.send <- message.Message:
 				default:
 					close(client.send)
 					delete(h.clients, client)

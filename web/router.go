@@ -33,7 +33,7 @@ func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS f
 	router.POST("/api/start", start.Handle(store))
 
 	// websocket endpoint
-	router.GET("/tags", tags.Handle(htmlTemplates, store, hub))
+	router.GET("/ws/:id", tags.Handle(htmlTemplates, store, hub))
 
 	return router
 }
