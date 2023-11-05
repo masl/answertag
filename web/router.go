@@ -27,6 +27,11 @@ func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS f
 	// static files
 	router.Handler("GET", "/static/*filepath", http.FileServer(http.FS(staticFS)))
 
+	// redirect /favicon.ico to /static/favicon.ico
+	router.GET("/favicon.ico", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		http.Redirect(w, r, "/static/favicon.ico", http.StatusMovedPermanently)
+	})
+
 	// api endpoints
 	router.POST("/api/ping", ping.Handle())
 
