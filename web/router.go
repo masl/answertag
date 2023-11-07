@@ -25,7 +25,7 @@ func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS f
 	router.GET("/c/:id", c.Handle(htmlTemplates, store))
 
 	// static files
-	router.Handler("GET", "/static/*filepath", http.FileServer(http.FS(staticFS)))
+	router.Handler("GET", "/static/*filepath", PreventDirectoryIndex(http.FileServer(http.FS(staticFS))))
 
 	// redirect /favicon.ico to /static/favicon.ico
 	router.GET("/favicon.ico", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
