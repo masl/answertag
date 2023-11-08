@@ -1,5 +1,10 @@
 package ws
 
+import (
+	"bytes"
+	"net/http"
+)
+
 // Message represents a message sent over the websocket for a new tag.
 type Message struct {
 	Tag     string `json:"tag"`
@@ -11,4 +16,17 @@ type Message struct {
 type BroadcastMessage struct {
 	CloudID string `json:"cloudId"`
 	Message []byte `json:"message"`
+}
+
+// ResponseBuffer is a buffer that implements http.ResponseWriter.
+type ResponseBuffer struct {
+	bytes.Buffer
+}
+
+func (rb *ResponseBuffer) Header() http.Header {
+	return http.Header{}
+}
+
+func (rb *ResponseBuffer) WriteHeader(statusCode int) {
+	// no-op
 }

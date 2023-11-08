@@ -1,8 +1,10 @@
+{{ define "tags" }}
 <div id="tags">
     <ul id="tag-list">
         {{ range . }}
-        <li class="hidden" data-font-size="{{ .FontSize }}" data-name="{{ .Tag.Name}}"></li>
+        <li class="hidden" data-font-size="{{ .FontSize }}" data-name="{{ .Tag.Name }}"></li>
         {{ end }}
     </ul>
     <div id="tagcloud" class="dark:fill-font"></div>
 </div>
+{{ end }}

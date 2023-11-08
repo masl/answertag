@@ -3,14 +3,14 @@ package c
 import (
 	"log/slog"
 	"net/http"
-	"text/template"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/masl/answertag/cloud"
 	"github.com/masl/answertag/storage"
+	"github.com/masl/answertag/tmpl"
 )
 
-func Handle(html *template.Template, store storage.Store) httprouter.Handle {
+func Handle(tm *tmpl.TemplateManager, store storage.Store) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		cld, err := store.ReadByID(ps.ByName("id"))
 		if err != nil {
@@ -31,8 +31,7 @@ func Handle(html *template.Template, store storage.Store) httprouter.Handle {
 			Tags:    cloud.SupplementTagsWithFontSizes(cld.Tags),
 		}
 
-		err = html.ExecuteTemplate(w, "cloud.html", data)
-		if err != nil {
+		if err := tm.RenderTemplate(w, "cloud", data, nil); err != nil {
 			slog.Error("error executing template", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}

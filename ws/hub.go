@@ -2,9 +2,8 @@
 package ws
 
 import (
-	"text/template"
-
 	"github.com/masl/answertag/storage"
+	"github.com/masl/answertag/tmpl"
 )
 
 // Hub maintains the set of active clients and broadcasts messages to the
@@ -26,17 +25,17 @@ type Hub struct {
 	storage storage.Store
 
 	// htmlTemplates includes the parsed templates.
-	htmlTemplates *template.Template
+	tm *tmpl.TemplateManager
 }
 
-func NewHub(store storage.Store, htmlTemplates *template.Template) *Hub {
+func NewHub(store storage.Store, tm *tmpl.TemplateManager) *Hub {
 	return &Hub{
-		broadcast:     make(chan BroadcastMessage),
-		register:      make(chan *Client),
-		unregister:    make(chan *Client),
-		clients:       make(map[*Client]bool),
-		storage:       store,
-		htmlTemplates: htmlTemplates,
+		broadcast:  make(chan BroadcastMessage),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		clients:    make(map[*Client]bool),
+		storage:    store,
+		tm:         tm,
 	}
 }
 

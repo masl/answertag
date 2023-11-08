@@ -3,10 +3,10 @@ package web
 import (
 	"io/fs"
 	"net/http"
-	"text/template"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/masl/answertag/storage"
+	"github.com/masl/answertag/tmpl"
 	"github.com/masl/answertag/web/c"
 	"github.com/masl/answertag/web/index"
 	"github.com/masl/answertag/web/ping"
@@ -15,14 +15,14 @@ import (
 	"github.com/masl/answertag/ws"
 )
 
-func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS fs.FS, hub *ws.Hub) *httprouter.Router {
+func GetRouter(store storage.Store, tm *tmpl.TemplateManager, staticFS fs.FS, hub *ws.Hub) *httprouter.Router {
 	router := httprouter.New()
 
 	// index page
-	router.GET("/", index.Handle(htmlTemplates))
+	router.GET("/", index.Handle(tm))
 
 	// cloud page
-	router.GET("/c/:id", c.Handle(htmlTemplates, store))
+	router.GET("/c/:id", c.Handle(tm, store))
 
 	// static files
 	router.Handler("GET", "/static/*filepath", PreventDirectoryIndex(http.FileServer(http.FS(staticFS))))
@@ -38,7 +38,21 @@ func GetRouter(store storage.Store, htmlTemplates *template.Template, staticFS f
 	router.POST("/api/start", start.Handle(store))
 
 	// websocket endpoint
-	router.GET("/ws/:id", tags.Handle(htmlTemplates, store, hub))
+	router.GET("/ws/:id", tags.Handle(store, hub))
 
 	return router
 }
+
+/*
+// renderTemplate is a helper function to handle template rendering.
+func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
+	err := htmlTemplates.ExecuteTemplate(w, tmpl+".html", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func initializeTemplates() *template.Template {
+	return template.Must(template.ParseFS(templatesFS, "templates/*.html"))
+}
+*/

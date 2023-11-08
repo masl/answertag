@@ -2,14 +2,13 @@ package tags
 
 import (
 	"net/http"
-	"text/template"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/masl/answertag/storage"
 	"github.com/masl/answertag/ws"
 )
 
-func Handle(html *template.Template, store storage.Store, hub *ws.Hub) httprouter.Handle {
+func Handle(store storage.Store, hub *ws.Hub) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		cloudID := ps.ByName("id")
 

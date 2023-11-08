@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/masl/answertag/cloud"
+	"github.com/masl/answertag/tmpl"
 )
 
 const (
@@ -109,9 +110,10 @@ func (c *Client) readPump() {
 			break
 		}
 
-		var responseBuffer bytes.Buffer
-		err = c.hub.htmlTemplates.ExecuteTemplate(&responseBuffer, "tags.html", cloud.SupplementTagsWithFontSizes(allTags))
-		if err != nil {
+		var responseBuffer ResponseBuffer
+		if err := c.hub.tm.RenderTemplate(&responseBuffer, "tags", cloud.SupplementTagsWithFontSizes(allTags), &tmpl.RenderTemplateOptions{
+			Layout: "tags",
+		}); err != nil {
 			slog.Error("execute tags.html template", "error", err)
 			break
 		}

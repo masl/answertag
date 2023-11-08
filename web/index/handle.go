@@ -1,22 +1,23 @@
 package index
 
 import (
+	"log/slog"
 	"net/http"
-	"text/template"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/masl/answertag/tmpl"
 )
 
-func Handle(html *template.Template) httprouter.Handle {
+func Handle(tm *tmpl.TemplateManager) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		testdata := struct {
+		data := struct {
 			Title string
 		}{
 			Title: "AnswerTag",
 		}
 
-		err := html.ExecuteTemplate(w, "index.html", testdata)
-		if err != nil {
+		if err := tm.RenderTemplate(w, "index", data, nil); err != nil {
+			slog.Error("error executing template", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}

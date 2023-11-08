@@ -7,9 +7,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"text/template"
 
 	"github.com/masl/answertag/storage/inmemory"
+	"github.com/masl/answertag/tmpl"
 	"github.com/masl/answertag/web"
 	"github.com/masl/answertag/ws"
 )
@@ -20,26 +20,25 @@ var (
 
 	//go:embed static/*
 	staticFS embed.FS
-
-	// parsed templates
-	htmlTemplates *template.Template
 )
 
 func main() {
 	handleSignal()
 
-	err := parseTemplates()
+	tm := tmpl.NewTemplateManager()
+	err := tmpl.RegisterTemplates(tm, templateFS)
 	if err != nil {
-		panic(err)
+		slog.Error("error registering templates", "error", err)
+		os.Exit(1)
 	}
 
 	store := inmemory.New()
-	hub := ws.NewHub(store, htmlTemplates)
+	hub := ws.NewHub(store, tm)
 	go hub.Run()
 
 	server := &http.Server{
 		Addr:    ":3000",
-		Handler: web.GetRouter(store, htmlTemplates, staticFS, hub),
+		Handler: web.GetRouter(store, tm, staticFS, hub),
 	}
 
 	slog.Info("web server listening on port 3000")
@@ -54,13 +53,4 @@ func handleSignal() {
 		slog.Info("exiting, bye-bye!")
 		os.Exit(1)
 	}()
-}
-
-func parseTemplates() (err error) {
-	htmlTemplates, err = template.ParseFS(templateFS, "templates/*.html")
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
