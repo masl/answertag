@@ -2,12 +2,14 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/masl/answertag/environment"
 	"github.com/masl/answertag/storage/inmemory"
 	"github.com/masl/answertag/tmpl"
 	"github.com/masl/answertag/web"
@@ -36,12 +38,18 @@ func main() {
 	hub := ws.NewHub(store, tm)
 	go hub.Run()
 
+	port, err := environment.Port(3000)
+	if err != nil {
+		slog.Error("error getting port", "error", err)
+		os.Exit(1)
+	}
+
 	server := &http.Server{
-		Addr:    ":3000",
+		Addr:    fmt.Sprintf(":%d", port),
 		Handler: web.GetRouter(store, tm, staticFS, hub),
 	}
 
-	slog.Info("web server listening on port 3000")
+	slog.Info("web server listening", "port", port)
 	panic(server.ListenAndServe())
 }
 
